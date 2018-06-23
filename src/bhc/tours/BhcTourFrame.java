@@ -1,8 +1,13 @@
 package bhc.tours;
 
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -23,12 +28,31 @@ public class BhcTourFrame extends JFrame {
 		mainPanel.setBorder(BorderFactory.createTitledBorder(panelBorder, "Tour Date", TitledBorder.TOP, TitledBorder.CENTER));
 		
 		getContentPane().add(mainPanel);
-		Icon deselectedIcon = new ImageIcon(getClass().getResource("plateau.jpg"));
-		Icon selectedIcon = new ImageIcon(getClass().getResource("plateau_border.jpg"));
-		JRadioButton button = new JRadioButton("Steven", deselectedIcon, true);
-		button.setSelectedIcon(selectedIcon);
 		
-		mainPanel.add(button, "foo");
+		JRadioButton lakeButton = createStandardRadioButton("Gardiner Lake", "gardiner-lake.jpg", "gardiner-lake_border.jpg");
+		JRadioButton plateauButton = createStandardRadioButton("Hellroaring Plateau", "plateau.jpg", "plateau_border.jpg");
+		JRadioButton pathButton = createStandardRadioButton("The Beaten Path", "beaten-path.jpg", "beaten-path_border.jpg");
+		ButtonGroup radioButtonGroup = new ButtonGroup();
+		radioButtonGroup.add(lakeButton);
+		radioButtonGroup.add(plateauButton);
+		radioButtonGroup.add(pathButton);
+		
+		lakeButton.setSelected(true);
+
+//		https://web7.jhuep.com/~sande107/bhc_site_v1/Homework3.html
+		mainPanel.add(lakeButton, "Gardiner Lake");
+		mainPanel.add(plateauButton, "Hellroaring Plateau");
+		mainPanel.add(pathButton, "The Beaten Path");
+	}
+	
+	private JRadioButton createStandardRadioButton(String text, String deselectedIconPath, String selectedIconPath) {
+		
+		Icon deselectedIcon = new ImageIcon(getClass().getResource(deselectedIconPath));
+		Icon selectedIcon = new ImageIcon(getClass().getResource(selectedIconPath));
+		JRadioButton radioButton = new JRadioButton(text, deselectedIcon, false);
+		radioButton.setSelectedIcon(selectedIcon);
+		radioButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		return radioButton;
 	}
 	
     public static void main(String args[])
