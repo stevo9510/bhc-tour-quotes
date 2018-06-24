@@ -57,7 +57,7 @@ public class BhcTourFrame extends JFrame {
 	private static final List<Integer> PATH_DURATIONS = 
 			Collections.unmodifiableList(Arrays.asList(5, 7));
 	
-	private JComboBox durationComboBox;
+	private JComboBox<Integer> durationComboBox;
 	private JButton requestQuoteButton;
 	private ButtonGroup radioButtonGroup;
 	private HashMap<JRadioButton, HikeOptionViewModel> buttonToViewModel = new HashMap<JRadioButton, HikeOptionViewModel>();
@@ -73,7 +73,7 @@ public class BhcTourFrame extends JFrame {
 		
 		getContentPane().add(mainPanel);
 		
-		durationComboBox = new JComboBox();
+		durationComboBox = new JComboBox<Integer>();
 		radioButtonGroup = new ButtonGroup();
 		
 		HikeOptionViewModel gardinerVM = new HikeOptionViewModel("Gardiner Lake", HIKE.GARDINER, "gardiner-lake.jpg", "gardiner-lake_border.jpg", LAKE_DURATIONS);
@@ -104,9 +104,9 @@ public class BhcTourFrame extends JFrame {
 		
 		JLabel durationLabel = createStandardLabel("Duration");		
 		
-		JComboBox monthComboBox = createMonthComboBox();
-		JComboBox dayComboBox = createDayComboBox();
-		JComboBox yearComboBox = createYearComboBox();
+		JComboBox<String> monthComboBox = createMonthComboBox();
+		JComboBox<Integer> dayComboBox = createDayComboBox();
+		JComboBox<Integer> yearComboBox = createYearComboBox();
 				
 		mainPanel.add(durationLabel);
 		mainPanel.add(durationComboBox);
@@ -127,8 +127,9 @@ public class BhcTourFrame extends JFrame {
 		mainPanel.add(costDisplayLabel);
 	}
 	
-	private void requestRate(JComboBox yearComboBox, JComboBox monthComboBox, JComboBox dayComboBox, JComboBox durationComboBox) {
+	private void requestRate(JComboBox<Integer> yearComboBox, JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox, JComboBox<Integer> durationComboBox) {
 		JRadioButton selectedButton = null;
+
 		for(AbstractButton button : Collections.list(radioButtonGroup.getElements())) {
 			if(button.isSelected()) {
 				selectedButton = (JRadioButton)button; 
@@ -160,8 +161,8 @@ public class BhcTourFrame extends JFrame {
 		}
 	}
 
-	private JComboBox createMonthComboBox() {
-		JComboBox monthComboBox = new JComboBox();
+	private JComboBox<String> createMonthComboBox() {
+		JComboBox<String> monthComboBox = new JComboBox<String>();
 		DateFormatSymbols dfs = new DateFormatSymbols();
 	
 		for(String month : dfs.getMonths()) {
@@ -171,16 +172,16 @@ public class BhcTourFrame extends JFrame {
 		return monthComboBox;
 	}
 	
-	private JComboBox createDayComboBox() {
-		JComboBox dayComboBox = new JComboBox();
+	private JComboBox<Integer> createDayComboBox() {
+		JComboBox<Integer> dayComboBox = new JComboBox<Integer>();
 		for(int dayIndex = 0; dayIndex < 31; dayIndex++) {
 			dayComboBox.addItem(dayIndex + 1);
 		}
 		return dayComboBox;
 	}
 	
-	private JComboBox createYearComboBox() {
-		JComboBox yearComboBox = new JComboBox();
+	private JComboBox<Integer> createYearComboBox() {
+		JComboBox<Integer> yearComboBox = new JComboBox<Integer>();
 		for(int yearIndex = VALID_START_YEAR; yearIndex < VALID_END_YEAR + 1; yearIndex++) {
 			yearComboBox.addItem(yearIndex);
 		}		
