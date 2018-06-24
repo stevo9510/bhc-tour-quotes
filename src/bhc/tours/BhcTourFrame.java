@@ -14,10 +14,13 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.DateFormatSymbols;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
@@ -35,6 +38,10 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.rbevans.bookingrate.BookingDay;
+import com.rbevans.bookingrate.Rates;
+import com.rbevans.bookingrate.Rates.HIKE;
+
 public class BhcTourFrame extends JFrame {
 	
 	private static final String BHC_HOME_PAGE_URL = "https://web7.jhuep.com/~sande107/bhc_site_v1/Homework3.html";
@@ -51,6 +58,10 @@ public class BhcTourFrame extends JFrame {
 			Collections.unmodifiableList(Arrays.asList(5, 7));
 	
 	private JComboBox durationComboBox;
+	private JButton requestQuoteButton;
+	private ButtonGroup radioButtonGroup;
+	private HashMap<JRadioButton, HikeOptionViewModel> buttonToViewModel = new HashMap<JRadioButton, HikeOptionViewModel>();
+	private JLabel costDisplayLabel;	
 	
 	public BhcTourFrame() {
 		setTitle("BHC Tour Options");
@@ -63,18 +74,19 @@ public class BhcTourFrame extends JFrame {
 		getContentPane().add(mainPanel);
 		
 		durationComboBox = new JComboBox();
+		radioButtonGroup = new ButtonGroup();
 		
-		JRadioButton lakeButton = createStandardTrailRadioButton("Gardiner Lake", "gardiner-lake.jpg", "gardiner-lake_border.jpg", LAKE_DURATIONS);
-		JRadioButton plateauButton = createStandardTrailRadioButton("Hellroaring Plateau", "plateau.jpg", "plateau_border.jpg", PLATEAU_DURATIONS);
-		JRadioButton pathButton = createStandardTrailRadioButton("The Beaten Path", "beaten-path.jpg", "beaten-path_border.jpg", PATH_DURATIONS);
-		ButtonGroup radioButtonGroup = new ButtonGroup();
-		radioButtonGroup.add(lakeButton);
-		radioButtonGroup.add(plateauButton);
-		radioButtonGroup.add(pathButton);
+		HikeOptionViewModel gardinerVM = new HikeOptionViewModel("Gardiner Lake", HIKE.GARDINER, "gardiner-lake.jpg", "gardiner-lake_border.jpg", LAKE_DURATIONS);
+		HikeOptionViewModel hellroaringVM = new HikeOptionViewModel("Hellroaring Plateau", HIKE.HELLROARING, "plateau.jpg", "plateau_border.jpg", PLATEAU_DURATIONS);
+		HikeOptionViewModel beatenVM = new HikeOptionViewModel("The Beaten Path", HIKE.BEATEN, "beaten-path.jpg", "beaten-path_border.jpg", PATH_DURATIONS);
 		
-		mainPanel.add(lakeButton, "Gardiner Lake");
-		mainPanel.add(plateauButton, "Hellroaring Plateau");
-		mainPanel.add(pathButton, "The Beaten Path");
+		JRadioButton gardinerButton = createStandardHikeRadioButton(gardinerVM);
+		JRadioButton hellroaringButton = createStandardHikeRadioButton(hellroaringVM);
+		JRadioButton beatenButton = createStandardHikeRadioButton(beatenVM);
+	
+		mainPanel.add(gardinerButton, "Gardiner Lake");
+		mainPanel.add(hellroaringButton, "Hellroaring Plateau");
+		mainPanel.add(beatenButton, "The Beaten Path");
 		
 		JButton openWebsiteButton = new JButton("View More Details...");
 		openWebsiteButton.addActionListener(new ActionListener() {
@@ -90,22 +102,75 @@ public class BhcTourFrame extends JFrame {
 		
 		mainPanel.add(openWebsiteButton);
 		
-		JLabel durationLabel = createStandardLabel("Duration");
+		JLabel durationLabel = createStandardLabel("Duration");		
 		
-		
-		JComboBox monthComboBox = new JComboBox();
-		
+		JComboBox monthComboBox = createMonthComboBox();
 		JComboBox dayComboBox = createDayComboBox();
 		JComboBox yearComboBox = createYearComboBox();
-		monthComboBox.addItem("January");
-		
+				
 		mainPanel.add(durationLabel);
 		mainPanel.add(durationComboBox);
 		mainPanel.add(monthComboBox);
 		mainPanel.add(dayComboBox);
 		mainPanel.add(yearComboBox);
+		
+		requestQuoteButton = new JButton("Request Quote");
+		requestQuoteButton.setEnabled(false);
+		requestQuoteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				requestRate(yearComboBox, monthComboBox, dayComboBox, durationComboBox);
+			}			
+		});
+		mainPanel.add(requestQuoteButton);
+		costDisplayLabel = new JLabel("Cost: ");
+		mainPanel.add(costDisplayLabel);
+	}
+	
+	private void requestRate(JComboBox yearComboBox, JComboBox monthComboBox, JComboBox dayComboBox, JComboBox durationComboBox) {
+		JRadioButton selectedButton = null;
+		for(AbstractButton button : Collections.list(radioButtonGroup.getElements())) {
+			if(button.isSelected()) {
+				selectedButton = (JRadioButton)button; 
+				break;
+			}
+		}
+		if(selectedButton == null) {
+			// TODO:
+		}
+		
+		HikeOptionViewModel viewModel = buttonToViewModel.get(selectedButton);
+		requestRate((int)yearComboBox.getSelectedItem(), monthComboBox.getSelectedIndex(), (int)dayComboBox.getSelectedItem(), (int)durationComboBox.getSelectedItem(), viewModel.getHikeType());
 	}
 		
+	private void requestRate(int year, int month, int day, int duration, Rates.HIKE hikeType) {
+		BookingDay bookingDate = new BookingDay(year, month + 1, day);
+		if(bookingDate.isValidDate()) {
+			Rates quoteHelper = new Rates(hikeType);
+			quoteHelper.setBeginDate(bookingDate);
+			quoteHelper.setDuration(duration);
+			if(quoteHelper.isValidDates()) {
+				costDisplayLabel.setText("Cost: " + quoteHelper.getCost());
+				
+			} else {
+				// TODO:
+			}
+		} else {
+			// TODO:
+		}
+	}
+
+	private JComboBox createMonthComboBox() {
+		JComboBox monthComboBox = new JComboBox();
+		DateFormatSymbols dfs = new DateFormatSymbols();
+	
+		for(String month : dfs.getMonths()) {
+			if(month.trim().length() > 0)
+				monthComboBox.addItem(month);
+		}
+		return monthComboBox;
+	}
+	
 	private JComboBox createDayComboBox() {
 		JComboBox dayComboBox = new JComboBox();
 		for(int dayIndex = 0; dayIndex < 31; dayIndex++) {
@@ -126,12 +191,11 @@ public class BhcTourFrame extends JFrame {
 		JLabel label = new JLabel(text + ":");
 		return label;		
 	}
-		
-	private JRadioButton createStandardTrailRadioButton(String text, String deselectedIconPath, String selectedIconPath, List<Integer> durationOptions) {
-		
-		Icon deselectedIcon = new ImageIcon(getClass().getResource(deselectedIconPath));
-		Icon selectedIcon = new ImageIcon(getClass().getResource(selectedIconPath));
-		JRadioButton radioButton = new JRadioButton(text, deselectedIcon, false);
+	
+	private JRadioButton createStandardHikeRadioButton(HikeOptionViewModel viewModel) {
+		Icon deselectedIcon = new ImageIcon(getClass().getResource(viewModel.getNormalIconFilePath()));
+		Icon selectedIcon = new ImageIcon(getClass().getResource(viewModel.getBorderedIconFilePath()));
+		JRadioButton radioButton = new JRadioButton(viewModel.getDisplayName(), deselectedIcon, false);
 		radioButton.setHorizontalTextPosition(SwingConstants.CENTER);
 		radioButton.setVerticalTextPosition(SwingConstants.TOP);
 		radioButton.setSelectedIcon(selectedIcon);
@@ -140,11 +204,18 @@ public class BhcTourFrame extends JFrame {
 			@Override
 			public void itemStateChanged(ItemEvent evt) {
 				if(evt.getStateChange() == ItemEvent.SELECTED) {
-					addDurationOptionsToList(durationOptions);	
+					handleTrailRadioButtonSelected(viewModel.getTourDurations());	
 				}				
 			}
 		});
+		radioButtonGroup.add(radioButton);
+		buttonToViewModel.put(radioButton, viewModel);
 		return radioButton;
+	}
+	
+	private void handleTrailRadioButtonSelected(List<Integer> durationOptions) {
+		requestQuoteButton.setEnabled(true);
+		addDurationOptionsToList(durationOptions);
 	}
 
 	private void addDurationOptionsToList(List<Integer> durationOptions) {
