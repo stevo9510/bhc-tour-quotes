@@ -85,22 +85,22 @@ public class BhcTourFrame extends JFrame {
 		GridBagConstraints headerGBC = new GridBagConstraints();
 		headerGBC.gridx = 0;
 		headerGBC.gridy = 0;
-		headerGBC.fill = GridBagConstraints.BOTH;
-		headerGBC.weightx = 1.0; // prevent collapsing from resize
-		headerGBC.weighty = 1.0; 
-		headerGBC.insets = new Insets(3,3,3,3);
+		headerGBC.fill = GridBagConstraints.BOTH; // prevent collapsing from resize
+		headerGBC.weightx = 1.0; 
+		headerGBC.weighty = 0.0; // don't resize 
+		headerGBC.insets = new Insets(3, 3, 3, 3);
 		getContentPane().add(headerPanel, headerGBC);
 		
 		GridBagConstraints remainderGBC = new GridBagConstraints();
 		remainderGBC.gridx = 0;
 		remainderGBC.gridy = 1;	
-		remainderGBC.fill = GridBagConstraints.BOTH;
-		remainderGBC.weightx = 1.0; // prevent collapsing from resize
-		remainderGBC.weighty = 1.0; 
+		remainderGBC.fill = GridBagConstraints.BOTH; // prevent collapsing from resize
+		remainderGBC.weightx = 1.0; 
+		remainderGBC.weighty = 0.0; // don't resize in this direction
 		JPanel selectTourOptionPanel = new JPanel();
 		selectTourOptionPanel.setPreferredSize(new Dimension(900, 250));
 		Border panelBorder = BorderFactory.createEtchedBorder();
-		selectTourOptionPanel.setBorder(BorderFactory.createTitledBorder(panelBorder, "Select a Tour Date", TitledBorder.LEFT, TitledBorder.CENTER));
+		selectTourOptionPanel.setBorder(BorderFactory.createTitledBorder(panelBorder, "Step 1: Select a Tour Type", TitledBorder.LEFT, TitledBorder.CENTER));
 		
 		durationComboBox = new JComboBox<Integer>();
 		durationComboBox.setPreferredSize(new Dimension(60, durationComboBox.getPreferredSize().height));
@@ -132,13 +132,15 @@ public class BhcTourFrame extends JFrame {
 			}			
 		});
 		
-		JPanel selectDatePanel = new JPanel(new FlowLayout());
+		JPanel step2and3Host = new JPanel(new GridBagLayout());
+						
+		JPanel selectDatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		Border dateInfoBorder = BorderFactory.createEtchedBorder();
-		selectDatePanel.setBorder(BorderFactory.createTitledBorder(dateInfoBorder, "Select Timeframe", TitledBorder.LEFT, TitledBorder.CENTER));
+		selectDatePanel.setBorder(BorderFactory.createTitledBorder(dateInfoBorder, "Step 2: Select Timeframe", TitledBorder.LEFT, TitledBorder.CENTER));
 				
 		JLabel durationLabel = createStandardFieldLabel("Duration (in days)");		
 		JLabel startDateLabel = createStandardFieldLabel("Start Date");
-		EmptyBorder labelPadding = new EmptyBorder(0, 20, 0, 0); 
+		EmptyBorder labelPadding = new EmptyBorder(0, 17, 0, 0); 
 		startDateLabel.setBorder(labelPadding);
 		
 		JComboBox<String> monthComboBox = createMonthComboBox();
@@ -152,14 +154,14 @@ public class BhcTourFrame extends JFrame {
 		selectDatePanel.add(dayComboBox);
 		selectDatePanel.add(yearComboBox);
 		
-		GridBagConstraints dateSelectionConstraints = new GridBagConstraints();
-		dateSelectionConstraints.gridx = 0;
-		dateSelectionConstraints.gridy = 2;
-		dateSelectionConstraints.fill = GridBagConstraints.BOTH;
-		dateSelectionConstraints.weightx = 1.0; // prevent collapsing from resize
-		dateSelectionConstraints.weighty = 1.0; 
+		GridBagConstraints dateGBC = new GridBagConstraints();
+		dateGBC.gridx = 0;
+		dateGBC.gridy = 0;
+		dateGBC.fill = GridBagConstraints.BOTH;
+		dateGBC.weightx = 0.5;
+		dateGBC.weighty = 0.0;
 		
-		getContentPane().add(selectDatePanel, dateSelectionConstraints);
+		step2and3Host.add(selectDatePanel, dateGBC);		
 		
 		requestQuoteButton = new JButton("Request Quote");
 		requestQuoteButton.setEnabled(false);
@@ -169,25 +171,21 @@ public class BhcTourFrame extends JFrame {
 				requestRate(yearComboBox, monthComboBox, dayComboBox, durationComboBox);
 			}			
 		});
-		costDisplayLabel = new JLabel("Cost: ");
 		
-		JPanel buttonsPanel = new JPanel(new FlowLayout());
+		JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		
 		Border buttonsBorder = BorderFactory.createEtchedBorder();
-		buttonsPanel.setBorder(BorderFactory.createTitledBorder(buttonsBorder, "Actions", TitledBorder.LEFT, TitledBorder.CENTER));
+		buttonsPanel.setBorder(BorderFactory.createTitledBorder(buttonsBorder, "Step 3: Request Quote", TitledBorder.LEFT, TitledBorder.CENTER));
 		
 		buttonsPanel.add(requestQuoteButton);
 		buttonsPanel.add(openWebsiteButton);
-		buttonsPanel.add(costDisplayLabel);
 
 		GridBagConstraints buttonPanelGBC = new GridBagConstraints();
-		buttonPanelGBC.gridx = 0;
-		buttonPanelGBC.gridy = 3;
+		buttonPanelGBC.gridx = 1;
+		buttonPanelGBC.gridy = 0;
 		buttonPanelGBC.fill = GridBagConstraints.BOTH;
-		buttonPanelGBC.weightx = 1.0; // prevent collapsing from resize
-		buttonPanelGBC.weighty = 1.0; 
-		
-		getContentPane().add(buttonsPanel, buttonPanelGBC);
+		buttonPanelGBC.weightx = 0.5; // prevent collapsing from resize
+		buttonPanelGBC.weighty = 0.0; 		
 		
 		ImageIcon infoIcon = (ImageIcon)UIManager.getIcon("OptionPane.informationIcon");
 		Image scaledInfoImage = infoIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
@@ -197,6 +195,31 @@ public class BhcTourFrame extends JFrame {
 		moneyIcon = new ImageIcon(moneyIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 		requestQuoteButton.setIcon(moneyIcon);
 		
+		step2and3Host.add(buttonsPanel, buttonPanelGBC);
+		
+		GridBagConstraints step2and3HostGBC = new GridBagConstraints();
+		step2and3HostGBC.gridx = 0;
+		step2and3HostGBC.gridy = 2;
+		step2and3HostGBC.fill = GridBagConstraints.BOTH;
+		step2and3HostGBC.weightx = 1.0; 
+		step2and3HostGBC.weighty = 0.0; 
+		getContentPane().add(step2and3Host, step2and3HostGBC);
+		
+		JPanel informationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		Border informationBorder = BorderFactory.createEtchedBorder();
+		informationPanel.setBorder(BorderFactory.createTitledBorder(informationBorder, "Request Results", TitledBorder.LEFT, TitledBorder.CENTER));
+		
+		GridBagConstraints informationPanelGBC = new GridBagConstraints();
+		informationPanelGBC.gridx = 0;
+		informationPanelGBC.gridy = 3;
+		informationPanelGBC.weightx = 1.0;
+		informationPanelGBC.weighty = 1.0;
+		informationPanelGBC.fill = GridBagConstraints.BOTH;
+		costDisplayLabel = createStandardFieldLabel("Cost");
+		informationPanel.add(costDisplayLabel);
+		
+		getContentPane().add(informationPanel, informationPanelGBC);
+				
 		this.pack();
 	}
 	
