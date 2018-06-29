@@ -9,6 +9,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,8 +38,10 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import com.rbevans.bookingrate.BookingDay;
 import com.rbevans.bookingrate.Rates;
@@ -95,11 +98,12 @@ public class BhcTourFrame extends JFrame {
 		remainderGBC.weightx = 1.0; // prevent collapsing from resize
 		remainderGBC.weighty = 1.0; 
 		JPanel selectTourOptionPanel = new JPanel();
-		selectTourOptionPanel.setPreferredSize(new Dimension(900, 300));
+		selectTourOptionPanel.setPreferredSize(new Dimension(900, 250));
 		Border panelBorder = BorderFactory.createEtchedBorder();
 		selectTourOptionPanel.setBorder(BorderFactory.createTitledBorder(panelBorder, "Select a Tour Date", TitledBorder.LEFT, TitledBorder.CENTER));
 		
 		durationComboBox = new JComboBox<Integer>();
+		durationComboBox.setPreferredSize(new Dimension(60, durationComboBox.getPreferredSize().height));
 		radioButtonGroup = new ButtonGroup();
 		
 		HikeOptionViewModel gardinerVM = new HikeOptionViewModel("Gardiner Lake", HIKE.GARDINER, "gardiner-lake.jpg", "gardiner-lake_border.jpg", LAKE_DURATIONS);
@@ -132,7 +136,10 @@ public class BhcTourFrame extends JFrame {
 		Border dateInfoBorder = BorderFactory.createEtchedBorder();
 		selectDatePanel.setBorder(BorderFactory.createTitledBorder(dateInfoBorder, "Select Timeframe", TitledBorder.LEFT, TitledBorder.CENTER));
 				
-		JLabel durationLabel = createStandardLabel("Duration");		
+		JLabel durationLabel = createStandardFieldLabel("Duration (in days)");		
+		JLabel startDateLabel = createStandardFieldLabel("Start Date");
+		EmptyBorder labelPadding = new EmptyBorder(0, 20, 0, 0); 
+		startDateLabel.setBorder(labelPadding);
 		
 		JComboBox<String> monthComboBox = createMonthComboBox();
 		JComboBox<Integer> dayComboBox = createDayComboBox();
@@ -140,6 +147,7 @@ public class BhcTourFrame extends JFrame {
 				
 		selectDatePanel.add(durationLabel);
 		selectDatePanel.add(durationComboBox);
+		selectDatePanel.add(startDateLabel);
 		selectDatePanel.add(monthComboBox);
 		selectDatePanel.add(dayComboBox);
 		selectDatePanel.add(yearComboBox);
@@ -180,6 +188,14 @@ public class BhcTourFrame extends JFrame {
 		buttonPanelGBC.weighty = 1.0; 
 		
 		getContentPane().add(buttonsPanel, buttonPanelGBC);
+		
+		ImageIcon infoIcon = (ImageIcon)UIManager.getIcon("OptionPane.informationIcon");
+		Image scaledInfoImage = infoIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+		openWebsiteButton.setIcon(new ImageIcon(scaledInfoImage));
+		
+		ImageIcon moneyIcon = new ImageIcon(getClass().getResource("money_icon.png"));
+		moneyIcon = new ImageIcon(moneyIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+		requestQuoteButton.setIcon(moneyIcon);
 		
 		this.pack();
 	}
@@ -245,7 +261,7 @@ public class BhcTourFrame extends JFrame {
 		return yearComboBox;
 	}
 		
-	private JLabel createStandardLabel(String text) {
+	private JLabel createStandardFieldLabel(String text) {
 		JLabel label = new JLabel(text + ":");
 		return label;		
 	}
