@@ -9,6 +9,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -68,27 +69,36 @@ public class BhcTourFrame extends JFrame {
 		setTitle("BHC Tour Options");
 		setSize(900, 600);
 		
-		this.setLayout(new BorderLayout());
-		
+		setLayout(new GridBagLayout());
+				
 		JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-//		headerPanel.setBackground(Color.);	
+		headerPanel.setBackground(Color.black);	
 		headerPanel.setPreferredSize(new Dimension(900, 40));
+
 		JLabel headerLabel = new JLabel("Request a Quote", JLabel.LEFT);
 		headerLabel.setFont(new Font("Helvetica", Font.BOLD + Font.ITALIC, 22));
-		headerPanel.add(headerLabel);
-		getContentPane().add(headerPanel, BorderLayout.NORTH);
-
+		headerPanel.add(headerLabel);		
+		
+		GridBagConstraints headerGBC = new GridBagConstraints();
+		headerGBC.gridx = 0;
+		headerGBC.gridy = 0;
+		headerGBC.fill = GridBagConstraints.BOTH;
+		headerGBC.weightx = 1.0; // prevent collapsing from resize
+		headerGBC.weighty = 1.0; 
+		headerGBC.insets = new Insets(3,3,3,3);
+		getContentPane().add(headerPanel, headerGBC);
+		
 		GridBagConstraints remainderGBC = new GridBagConstraints();
-		remainderGBC.gridx = GridBagConstraints.REMAINDER;
-		remainderGBC.gridy = 1;
-		
-		JPanel mainPanel = new JPanel();
-		mainPanel.setPreferredSize(new Dimension(900, 500));
+		remainderGBC.gridx = 0;
+		remainderGBC.gridy = 1;	
+		remainderGBC.fill = GridBagConstraints.BOTH;
+		remainderGBC.weightx = 1.0; // prevent collapsing from resize
+		remainderGBC.weighty = 1.0; 
+		JPanel selectTourOptionPanel = new JPanel();
+		selectTourOptionPanel.setPreferredSize(new Dimension(900, 300));
 		Border panelBorder = BorderFactory.createEtchedBorder();
-		mainPanel.setBorder(BorderFactory.createTitledBorder(panelBorder, "Tour Date", TitledBorder.TOP, TitledBorder.CENTER));
+		selectTourOptionPanel.setBorder(BorderFactory.createTitledBorder(panelBorder, "Select a Tour Date", TitledBorder.LEFT, TitledBorder.CENTER));
 		
-		getContentPane().add(mainPanel);
-				
 		durationComboBox = new JComboBox<Integer>();
 		radioButtonGroup = new ButtonGroup();
 		
@@ -100,11 +110,13 @@ public class BhcTourFrame extends JFrame {
 		JRadioButton hellroaringButton = createStandardHikeRadioButton(hellroaringVM);
 		JRadioButton beatenButton = createStandardHikeRadioButton(beatenVM);
 	
-		mainPanel.add(gardinerButton, "Gardiner Lake");
-		mainPanel.add(hellroaringButton, "Hellroaring Plateau");
-		mainPanel.add(beatenButton, "The Beaten Path");
+		selectTourOptionPanel.add(gardinerButton, "Gardiner Lake");
+		selectTourOptionPanel.add(hellroaringButton, "Hellroaring Plateau");
+		selectTourOptionPanel.add(beatenButton, "The Beaten Path");
+
+		getContentPane().add(selectTourOptionPanel, remainderGBC);
 		
-		JButton openWebsiteButton = new JButton("View More Details...");
+		JButton openWebsiteButton = new JButton("View More Tour Details...");
 		openWebsiteButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -116,19 +128,30 @@ public class BhcTourFrame extends JFrame {
 			}			
 		});
 		
-		mainPanel.add(openWebsiteButton);
-		
+		JPanel selectDatePanel = new JPanel(new FlowLayout());
+		Border dateInfoBorder = BorderFactory.createEtchedBorder();
+		selectDatePanel.setBorder(BorderFactory.createTitledBorder(dateInfoBorder, "Select Timeframe", TitledBorder.LEFT, TitledBorder.CENTER));
+				
 		JLabel durationLabel = createStandardLabel("Duration");		
 		
 		JComboBox<String> monthComboBox = createMonthComboBox();
 		JComboBox<Integer> dayComboBox = createDayComboBox();
 		JComboBox<Integer> yearComboBox = createYearComboBox();
 				
-		mainPanel.add(durationLabel);
-		mainPanel.add(durationComboBox);
-		mainPanel.add(monthComboBox);
-		mainPanel.add(dayComboBox);
-		mainPanel.add(yearComboBox);
+		selectDatePanel.add(durationLabel);
+		selectDatePanel.add(durationComboBox);
+		selectDatePanel.add(monthComboBox);
+		selectDatePanel.add(dayComboBox);
+		selectDatePanel.add(yearComboBox);
+		
+		GridBagConstraints dateSelectionConstraints = new GridBagConstraints();
+		dateSelectionConstraints.gridx = 0;
+		dateSelectionConstraints.gridy = 2;
+		dateSelectionConstraints.fill = GridBagConstraints.BOTH;
+		dateSelectionConstraints.weightx = 1.0; // prevent collapsing from resize
+		dateSelectionConstraints.weighty = 1.0; 
+		
+		getContentPane().add(selectDatePanel, dateSelectionConstraints);
 		
 		requestQuoteButton = new JButton("Request Quote");
 		requestQuoteButton.setEnabled(false);
@@ -138,9 +161,27 @@ public class BhcTourFrame extends JFrame {
 				requestRate(yearComboBox, monthComboBox, dayComboBox, durationComboBox);
 			}			
 		});
-		mainPanel.add(requestQuoteButton);
 		costDisplayLabel = new JLabel("Cost: ");
-		mainPanel.add(costDisplayLabel);
+		
+		JPanel buttonsPanel = new JPanel(new FlowLayout());
+		
+		Border buttonsBorder = BorderFactory.createEtchedBorder();
+		buttonsPanel.setBorder(BorderFactory.createTitledBorder(buttonsBorder, "Actions", TitledBorder.LEFT, TitledBorder.CENTER));
+		
+		buttonsPanel.add(requestQuoteButton);
+		buttonsPanel.add(openWebsiteButton);
+		buttonsPanel.add(costDisplayLabel);
+
+		GridBagConstraints buttonPanelGBC = new GridBagConstraints();
+		buttonPanelGBC.gridx = 0;
+		buttonPanelGBC.gridy = 3;
+		buttonPanelGBC.fill = GridBagConstraints.BOTH;
+		buttonPanelGBC.weightx = 1.0; // prevent collapsing from resize
+		buttonPanelGBC.weighty = 1.0; 
+		
+		getContentPane().add(buttonsPanel, buttonPanelGBC);
+		
+		this.pack();
 	}
 	
 	private void requestRate(JComboBox<Integer> yearComboBox, JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox, JComboBox<Integer> durationComboBox) {
