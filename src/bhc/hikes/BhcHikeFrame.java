@@ -1,3 +1,13 @@
+/**
+ * Copyright 2018
+ * Steven Anderson
+ * All rights reserved
+ * 
+ * Homework 5 - BHC Hike Quotes
+ * BhcHikeFrame.java - JFrame used to allow users to request quote/cost information about different hikes (tours). 
+ * 06/30/2018
+ */
+
 package bhc.hikes;
 
 import java.awt.Color;
@@ -59,11 +69,12 @@ public class BhcHikeFrame extends JFrame {
 	private static final List<Integer> HELLROARING_DURATIONS = Collections.unmodifiableList(Arrays.asList(2, 3, 4));
 	private static final List<Integer> BEATEN_DURATIONS = Collections.unmodifiableList(Arrays.asList(5, 7));
 
-	// Header related constants
-	private static final Color HEADER_BACKGROUND_COLOR = Color.BLACK;
-	private static final Color HEADER_TEXT_COLOR = Color.white;
+	// Header related constants (palette help from Color.Adobe.com)
+	private static final Color HEADER_BACKGROUND_COLOR = new Color(25, 45, 64);
+	private static final Color HEADER_TEXT_COLOR = new Color(150, 172, 191);
 	private static final Font HEADER_FONT = new Font("Helvetica", Font.BOLD + Font.ITALIC, 22);
-
+	private static final Color MAIN_BACKGROUND_COLOR = new Color(212, 221, 235);
+	
 	// Fonts for the results related components.  These are a little larger than default for emphasis to the user.  
 	private static final Font RESULTS_LABEL_FONT = new Font("Default", Font.PLAIN, 18);
 	private static final Font RESULTS_FIELD_FONT = new Font("Default", Font.BOLD, 18);
@@ -92,6 +103,7 @@ public class BhcHikeFrame extends JFrame {
 		setLocationByPlatform(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new GridBagLayout());
+		setBackground(MAIN_BACKGROUND_COLOR);
 		
 		int mainYCountForGBC = 0;
 		
@@ -316,6 +328,7 @@ public class BhcHikeFrame extends JFrame {
 	 */
 	private static JPanel createStandardBorderPanel(String borderTitle) {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		panel.setBackground(MAIN_BACKGROUND_COLOR);
 		Border border = BorderFactory.createEtchedBorder();
 		panel.setBorder(BorderFactory.createTitledBorder(border, borderTitle, TitledBorder.LEFT, TitledBorder.CENTER));
 		return panel;
@@ -406,7 +419,7 @@ public class BhcHikeFrame extends JFrame {
 		
 		// this should not happen based on Presentation logic of this JFrame, but as a safeguard, handle this case
 		if(selectedButton == null) {
-			JOptionPane.showMessageDialog(null, "There was no selected tour option.  Please select one to continue", "No Tour Selection", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "There was no selected tour option.  Please select one to continue", "No Tour Selection", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		
@@ -437,11 +450,11 @@ public class BhcHikeFrame extends JFrame {
 				resultsStartDateTextField.setValue(quoteHelper.getBeginDate().getTime());
 				resultsEndDateTextField.setValue(quoteHelper.getEndDate().getTime());
 			} else {
-				JOptionPane.showMessageDialog(null, "The selected timeframe is invalid for the following reason: " + quoteHelper.getDetails(), 
+				JOptionPane.showMessageDialog(this, "The selected timeframe is invalid for the following reason: " + quoteHelper.getDetails(), 
 						"Invalid Timeframe Selected", JOptionPane.INFORMATION_MESSAGE);
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "The selected date is not a valid day of that month and/or year. Please choose another date.", 
+			JOptionPane.showMessageDialog(this, "The selected date is not a valid day of that month and/or year. Please choose another date.", 
 					"Invalid Date Selected", JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -533,6 +546,7 @@ public class BhcHikeFrame extends JFrame {
 		radioButton.setVerticalTextPosition(SwingConstants.TOP);
 		radioButton.setSelectedIcon(selectedIcon);
 		radioButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		radioButton.setBackground(MAIN_BACKGROUND_COLOR);
 		radioButton.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent evt) {

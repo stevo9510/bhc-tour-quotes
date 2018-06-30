@@ -3,9 +3,9 @@
  * Steven Anderson
  * All rights reserved
  * 
- * Homework 5 - BHC Tour Quotes
- * Aircraft.java - Abstract Contact Model of an Aircraft Object
- * 06/20/2018
+ * Homework 5 - BHC Hike Quotes
+ * Utility.java - Used for shared utility methods. 
+ * 06/30/2018
  */
 
 package bhc.hikes;
@@ -17,6 +17,9 @@ import java.net.URL;
 
 import javax.swing.JOptionPane;
 
+/** 
+ * @author sande107
+ */
 public class Utility {
 
 	/**

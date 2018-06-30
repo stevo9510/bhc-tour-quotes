@@ -1,3 +1,13 @@
+/**
+ * Copyright 2018
+ * Steven Anderson
+ * All rights reserved
+ * 
+ * Homework 5 - BHC Hike Quotes
+ * HikeOptionViewModel.java - View model used to encapsulate information about hike options for use in building GUI components and event handling
+ * 06/30/2018
+ */
+
 package bhc.hikes;
 
 import java.util.Collections;
