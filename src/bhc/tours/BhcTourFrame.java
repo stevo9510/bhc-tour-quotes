@@ -20,8 +20,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,6 +34,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -52,7 +55,7 @@ import com.rbevans.bookingrate.Rates.HIKE;
 
 public class BhcTourFrame extends JFrame {
 	
-	private static final String BHC_HOME_PAGE_URL = "https://web7.jhuep.com/~sande107/bhc_site_v1/Homework3.html";
+	private static final String BHC_HOME_PAGE_URL = "https://web7.jhuep.com/~sande107/bhc_site_v1/Homework3.html#tourInfoLabel";
 	
 	// Note: These are based off BookingDay.java
 	private static final int VALID_START_YEAR = 2007;
@@ -69,12 +72,15 @@ public class BhcTourFrame extends JFrame {
 	private JButton requestQuoteButton;
 	private ButtonGroup radioButtonGroup;
 	private HashMap<JRadioButton, HikeOptionViewModel> buttonToViewModel = new HashMap<JRadioButton, HikeOptionViewModel>();
-	private JLabel costDisplayLabel;	
+	private JFormattedTextField resultsStartDateTextField;
+	private JFormattedTextField resultsEndDateTextField;
+	private JTextField costTextField;
 	
 	public BhcTourFrame() {
 		setTitle("BHC Tour Options");
 		setSize(900, 600);
-		
+		setLocationByPlatform(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new GridBagLayout());
 				
 		JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -124,6 +130,7 @@ public class BhcTourFrame extends JFrame {
 		getContentPane().add(selectTourOptionPanel, remainderGBC);
 		
 		JButton openWebsiteButton = new JButton("View More Tour Details...");
+		openWebsiteButton.setToolTipText("Open BHC Website with More Details and Tour Information");
 		openWebsiteButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -219,21 +226,41 @@ public class BhcTourFrame extends JFrame {
 		informationPanelGBC.weightx = 1.0;
 		informationPanelGBC.weighty = 1.0;
 		informationPanelGBC.fill = GridBagConstraints.BOTH;
-		costDisplayLabel = createStandardFieldLabel("Cost");
+		
+		JLabel resultsStartDateLabel = createStandardFieldLabel("Start");
+		resultsStartDateLabel.setFont(new Font(resultsStartDateLabel.getFont().getFontName(), Font.BOLD, 20));
+
+		JLabel resultsEndDateLabel = createStandardFieldLabel("End");
+		resultsEndDateLabel.setFont(new Font(resultsEndDateLabel.getFont().getFontName(), Font.BOLD, 20));
+
+		resultsStartDateTextField = new JFormattedTextField(new SimpleDateFormat("MM/dd/yyyy"));
+		resultsStartDateTextField.setFont(new Font(resultsStartDateTextField.getFont().getFontName(), Font.BOLD, 20));
+		resultsStartDateTextField.setColumns(7);
+		resultsStartDateTextField.setEditable(false);
+		resultsEndDateTextField = new JFormattedTextField(new SimpleDateFormat("MM/dd/yyyy"));
+		resultsEndDateTextField.setColumns(7);
+		resultsEndDateTextField.setFont(new Font(resultsEndDateTextField.getFont().getFontName(), Font.BOLD, 20));
+		resultsEndDateTextField.setEditable(false);
+		informationPanel.add(resultsStartDateLabel);
+		informationPanel.add(resultsStartDateTextField);
+		informationPanel.add(resultsEndDateLabel);
+		informationPanel.add(resultsEndDateTextField);
+		
+		JLabel costDisplayLabel = createStandardFieldLabel("Cost");
 		costDisplayLabel.setFont(new Font(costDisplayLabel.getFont().getFontName(), Font.BOLD, 20));
+		
 		informationPanel.add(costDisplayLabel);
-		JTextField costTextBox = new JTextField("test", 5);
-		costTextBox.setFont(costDisplayLabel.getFont());
-		costTextBox.setEditable(false);
-		
-		JTextArea additionalInformationTextArea = new JTextArea(5, 20);
-		
-		informationPanel.add(costTextBox);
-		informationPanel.add(additionalInformationTextArea);
-		getContentPane().add(informationPanel, informationPanelGBC);
 				
+		costTextField = new JTextField("", 5);
+		costTextField.setHorizontalAlignment(JTextField.RIGHT);
+		costTextField.setFont(costDisplayLabel.getFont());
+		costTextField.setEditable(false);
+		
+		informationPanel.add(costTextField);
+		getContentPane().add(informationPanel, informationPanelGBC);
+		
 		this.pack();
-	}
+	}	
 	
 	private void requestRate(JComboBox<Integer> yearComboBox, JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox, JComboBox<Integer> durationComboBox) {
 		JRadioButton selectedButton = null;
@@ -259,12 +286,20 @@ public class BhcTourFrame extends JFrame {
 			quoteHelper.setBeginDate(bookingDate);
 			quoteHelper.setDuration(duration);
 			if(quoteHelper.isValidDates()) {
-				costDisplayLabel.setText("Cost: " + quoteHelper.getCost());
+				costTextField.setText("$" + quoteHelper.getCost());
+				resultsStartDateTextField.setValue(quoteHelper.getBeginDate().getTime());
+				resultsEndDateTextField.setValue(quoteHelper.getEndDate().getTime());
 			} else {
+				costTextField.setText("");
+				resultsStartDateTextField.setText("");
+				resultsEndDateTextField.setText("");
 				JOptionPane.showMessageDialog(null, "The selected timeframe is invalid for the following reason: " + quoteHelper.getDetails(), 
 						"Invalid Timeframe Selected", JOptionPane.INFORMATION_MESSAGE);
 			}
 		} else {
+			costTextField.setText("");
+			resultsStartDateTextField.setText("");
+			resultsEndDateTextField.setText("");
 			JOptionPane.showMessageDialog(null, "The selected date is not a valid day of that month and/or year. Please choose another date.", 
 					"Invalid Date Selected", JOptionPane.ERROR_MESSAGE);
 		}
