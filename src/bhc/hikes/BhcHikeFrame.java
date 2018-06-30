@@ -62,7 +62,8 @@ public class BhcHikeFrame extends JFrame {
 	private static final String BHC_HOME_PAGE_URL = "https://web7.jhuep.com/~sande107/bhc_site_v1/Homework3.html#tourInfoLabel";
 		
 	// Note: These are based off BookingDay.java.  Ideally these would be defined / shared between the two classes, but I did not want to modify the provided BookingDay class.
-	private static final int VALID_START_YEAR = 2007;
+	private static final int VALID_START_YEAR = 2007; // Going to assume we're actually in the year 2007, and accept quotes for anything pre-current date :)
+													  // This allows for full testing and demonstration of GUI
 	private static final int VALID_END_YEAR = 2020;
 
 	private static final List<Integer> GARINDER_DURATIONS = Collections.unmodifiableList(Arrays.asList(3, 5));
