@@ -34,8 +34,11 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -138,21 +141,22 @@ public class BhcTourFrame extends JFrame {
 		Border dateInfoBorder = BorderFactory.createEtchedBorder();
 		selectDatePanel.setBorder(BorderFactory.createTitledBorder(dateInfoBorder, "Step 2: Select Timeframe", TitledBorder.LEFT, TitledBorder.CENTER));
 				
-		JLabel durationLabel = createStandardFieldLabel("Duration (in days)");		
 		JLabel startDateLabel = createStandardFieldLabel("Start Date");
-		EmptyBorder labelPadding = new EmptyBorder(0, 17, 0, 0); 
-		startDateLabel.setBorder(labelPadding);
+		JLabel durationLabel = createStandardFieldLabel("Duration (in days)");		
+		EmptyBorder labelPadding = new EmptyBorder(0, 40, 0, 0); 
+		durationLabel.setBorder(labelPadding);
 		
 		JComboBox<String> monthComboBox = createMonthComboBox();
 		JComboBox<Integer> dayComboBox = createDayComboBox();
 		JComboBox<Integer> yearComboBox = createYearComboBox();
 				
-		selectDatePanel.add(durationLabel);
-		selectDatePanel.add(durationComboBox);
 		selectDatePanel.add(startDateLabel);
 		selectDatePanel.add(monthComboBox);
 		selectDatePanel.add(dayComboBox);
 		selectDatePanel.add(yearComboBox);
+
+		selectDatePanel.add(durationLabel);
+		selectDatePanel.add(durationComboBox);
 		
 		GridBagConstraints dateGBC = new GridBagConstraints();
 		dateGBC.gridx = 0;
@@ -216,8 +220,16 @@ public class BhcTourFrame extends JFrame {
 		informationPanelGBC.weighty = 1.0;
 		informationPanelGBC.fill = GridBagConstraints.BOTH;
 		costDisplayLabel = createStandardFieldLabel("Cost");
+		costDisplayLabel.setFont(new Font(costDisplayLabel.getFont().getFontName(), Font.BOLD, 20));
 		informationPanel.add(costDisplayLabel);
+		JTextField costTextBox = new JTextField("test", 5);
+		costTextBox.setFont(costDisplayLabel.getFont());
+		costTextBox.setEditable(false);
 		
+		JTextArea additionalInformationTextArea = new JTextArea(5, 20);
+		
+		informationPanel.add(costTextBox);
+		informationPanel.add(additionalInformationTextArea);
 		getContentPane().add(informationPanel, informationPanelGBC);
 				
 		this.pack();
@@ -248,12 +260,13 @@ public class BhcTourFrame extends JFrame {
 			quoteHelper.setDuration(duration);
 			if(quoteHelper.isValidDates()) {
 				costDisplayLabel.setText("Cost: " + quoteHelper.getCost());
-				
 			} else {
-				// TODO:
+				JOptionPane.showMessageDialog(null, "The selected timeframe is invalid for the following reason: " + quoteHelper.getDetails(), 
+						"Invalid Timeframe Selected", JOptionPane.INFORMATION_MESSAGE);
 			}
 		} else {
-			// TODO:
+			JOptionPane.showMessageDialog(null, "The selected date is not a valid day of that month and/or year. Please choose another date.", 
+					"Invalid Date Selected", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
