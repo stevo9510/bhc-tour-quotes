@@ -44,7 +44,7 @@ public class HikeOptionViewModel {
 		return borderedIconFilePath;
 	}
 
-	public List<Integer> getTourDurations() {
+	public List<Integer> getHikeDurations() {
 		return tourDurations;
 	}	
 	
