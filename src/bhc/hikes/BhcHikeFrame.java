@@ -6,6 +6,10 @@
  * Homework 5 - BHC Hike Quotes
  * BhcHikeFrame.java - JFrame used to allow users to request quote/cost information about different hikes (tours). 
  * 06/30/2018
+ * 
+ * Modifications:
+ * 07/02/2018 (S. Anderson) - Updated to call against a RatesService interface (as opposed to a concrete implementation), and refactored the requestRate method accordingly.
+ * Main is set to pass a web based BhcSocketRatesService instance into BhcHikeFrame, but this can be swapped easily. 
  */
 
 package bhc.hikes;
@@ -23,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormatSymbols;
@@ -96,9 +101,12 @@ public class BhcHikeFrame extends JFrame {
 	private JTextField hikeTextField;
 	private JTextField costTextField;
 	private HashMap<JRadioButton, HikeOptionViewModel> buttonToViewModel = new HashMap<JRadioButton, HikeOptionViewModel>();
-
-	public BhcHikeFrame() {
+	private RatesService quoteRequestRatesService;
+	
+	public BhcHikeFrame(RatesService ratesService) {
 		// Initialize JFrame
+		this.quoteRequestRatesService = ratesService;
+		
 		setTitle("BHC Tour Options");
 		setSize(PAGE_WIDTH, PAGE_HEIGHT);
 		setLocationByPlatform(true);
@@ -425,7 +433,7 @@ public class BhcHikeFrame extends JFrame {
 		}
 		
 		HikeOptionViewModel viewModel = buttonToViewModel.get(selectedButton);
-		requestRate((int)yearComboBox.getSelectedItem(), monthComboBox.getSelectedIndex(), (int)dayComboBox.getSelectedItem(), (int)durationComboBox.getSelectedItem(), viewModel);
+		requestRate((int)yearComboBox.getSelectedItem(), monthComboBox.getSelectedIndex() + 1, (int)dayComboBox.getSelectedItem(), (int)durationComboBox.getSelectedItem(), viewModel);
 	}
 		
 	/** 
@@ -439,20 +447,24 @@ public class BhcHikeFrame extends JFrame {
 	 * @param hikeOptionVM
 	 */
 	private void requestRate(int year, int month, int day, int duration, HikeOptionViewModel hikeOptionVM) {
-		BookingDay bookingDate = new BookingDay(year, month + 1, day);
+		quoteRequestRatesService.requestQuoteDetails(hikeOptionVM.getHikeType(), year, month, day, duration);
 		clearResultsFields(); // clear results fields before each time
-		if(bookingDate.isValidDate()) {
-			Rates quoteHelper = new Rates(hikeOptionVM.getHikeType());
-			quoteHelper.setBeginDate(bookingDate);
-			quoteHelper.setDuration(duration);
-			if(quoteHelper.isValidDates()) {
-				hikeTextField.setText(hikeOptionVM.getDisplayName());
-				costTextField.setText("$" + quoteHelper.getCost());
-				resultsStartDateTextField.setValue(quoteHelper.getBeginDate().getTime());
-				resultsEndDateTextField.setValue(quoteHelper.getEndDate().getTime());
+		if(!quoteRequestRatesService.isInvalidDate()) {
+			if(!quoteRequestRatesService.isInvalidSeasonalDates()) {
+				if(quoteRequestRatesService.isValidCost()) {
+					hikeTextField.setText(hikeOptionVM.getDisplayName());
+					costTextField.setText("$" + quoteRequestRatesService.getCost());
+					resultsStartDateTextField.setValue(quoteRequestRatesService.getBeginDate());
+					resultsEndDateTextField.setValue(quoteRequestRatesService.getEndDate());
+				}
+				else {
+					// this a catch-all case, if the cost is still invalid for other reasons
+					JOptionPane.showMessageDialog(this, "The selected timeframe is not valid for the following reason: " + quoteRequestRatesService.getDetails(), 
+							"Invalid Timeframe Selected", JOptionPane.ERROR_MESSAGE);
+				}
 			} else {
-				JOptionPane.showMessageDialog(this, "The selected timeframe is invalid for the following reason: " + quoteHelper.getDetails(), 
-						"Invalid Timeframe Selected", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this, "The selected timeframe is not during the tour season. Please choose another date.", 
+						"Date Not in Season", JOptionPane.INFORMATION_MESSAGE);
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, "The selected date is not a valid day of that month and/or year. Please choose another date.", 
@@ -585,8 +597,8 @@ public class BhcHikeFrame extends JFrame {
 	 */
     public static void main(String args[])
     {
-    	// Create an instance of the test application
-		final BhcHikeFrame mainFrame = new BhcHikeFrame();
+    	RatesService service = new BhcSocketRatesService(); // new BhcSocketService(); // this service can be swapped out so easily!
+		final BhcHikeFrame mainFrame = new BhcHikeFrame(service);
 		Runnable showFrame = new Runnable() {
 			public void run() {
 			    mainFrame.setVisible(true);
