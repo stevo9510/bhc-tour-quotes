@@ -14,6 +14,9 @@ import java.util.Date;
 
 import com.rbevans.bookingrate.Rates;
 
+/** 
+ * @author sande107
+ */
 public interface RatesService {
 
 	/**
