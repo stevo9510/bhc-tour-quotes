@@ -27,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormatSymbols;
@@ -57,10 +56,11 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-import com.rbevans.bookingrate.BookingDay;
-import com.rbevans.bookingrate.Rates;
 import com.rbevans.bookingrate.Rates.HIKE;
 
+/**
+ * @author sande107
+ */
 @SuppressWarnings("serial")
 public class BhcHikeFrame extends JFrame {
 	
@@ -456,8 +456,7 @@ public class BhcHikeFrame extends JFrame {
 					costTextField.setText("$" + quoteRequestRatesService.getCost());
 					resultsStartDateTextField.setValue(quoteRequestRatesService.getBeginDate());
 					resultsEndDateTextField.setValue(quoteRequestRatesService.getEndDate());
-				}
-				else {
+				} else {
 					// this a catch-all case, if the cost is still invalid for other reasons
 					JOptionPane.showMessageDialog(this, "The selected timeframe is not valid for the following reason: " + quoteRequestRatesService.getDetails(), 
 							"Invalid Timeframe Selected", JOptionPane.ERROR_MESSAGE);
@@ -597,7 +596,7 @@ public class BhcHikeFrame extends JFrame {
 	 */
     public static void main(String args[])
     {
-    	RatesService service = new BhcSocketRatesService(); // new BhcSocketService(); // this service can be swapped out so easily!
+    	RatesService service = new BhcSocketRatesService(); // new BhcLocalRatesService(); // this service can be swapped out this easily!
 		final BhcHikeFrame mainFrame = new BhcHikeFrame(service);
 		Runnable showFrame = new Runnable() {
 			public void run() {

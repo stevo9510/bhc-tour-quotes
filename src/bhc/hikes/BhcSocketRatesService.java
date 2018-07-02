@@ -25,7 +25,6 @@ import java.util.StringJoiner;
 import com.rbevans.bookingrate.Rates;
 
 /** 
- * 
  * @author sande107
  */
 public class BhcSocketRatesService implements RatesService {
@@ -114,10 +113,12 @@ public class BhcSocketRatesService implements RatesService {
             System.err.println("Couldn't get I/O for the connection to: " + HOST);
         }
 		
+        // send parameter to server through socket
 		out.println(requestParameter);
 		
 		String inLine;
 		StringBuilder builder = new StringBuilder();
+		
 		while ((inLine=in.readLine()) != null) {
 			builder.append(inLine);
 		}
@@ -199,7 +200,7 @@ public class BhcSocketRatesService implements RatesService {
 	@Override
 	public Date getBeginDate() {
 		GregorianCalendar beginDate = new GregorianCalendar(this.beginYear, this.beginMonth - 1, this.beginDay);
-		beginDate.setLenient(false);
+		beginDate.setLenient(false); // will allow exception to be thrown if date is invalid
 		try {
 			return beginDate.getTime();
 		} catch (IllegalArgumentException e) {
@@ -213,13 +214,13 @@ public class BhcSocketRatesService implements RatesService {
 	@Override
 	public Date getEndDate() {
 		GregorianCalendar calendar = new GregorianCalendar(this.beginYear, this.beginMonth - 1, this.beginDay);
-		calendar.setLenient(false);
+		calendar.setLenient(false); // will allow exception to be thrown if date is invalid
 		try {
 			calendar.add(Calendar.DAY_OF_MONTH, duration - 1);
 			Date endDate = calendar.getTime();
 			return endDate;
 		} catch (IllegalArgumentException e) {
-			return null;
+			return null; // if date is invalid, return null
 		}
 	}
 	

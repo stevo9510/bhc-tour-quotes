@@ -20,6 +20,9 @@ import com.rbevans.bookingrate.BookingDay;
 import com.rbevans.bookingrate.Rates;
 import com.rbevans.bookingrate.Rates.HIKE;
 
+/** 
+ * @author sande107
+ */
 public class BhcLocalRatesService implements RatesService {
 	
 	// Helper objects
@@ -39,7 +42,7 @@ public class BhcLocalRatesService implements RatesService {
 	}
 	
 	private void setDefaultValues() {
-		cost = -1.0;
+		cost = -0.01;
 		details = null;
 		beginDate = null;
 		endDate = null;
@@ -80,6 +83,9 @@ public class BhcLocalRatesService implements RatesService {
 		return details;
 	}
 
+	/** 
+	 * In this case, assume a valid cost is anything >= 0
+	 */
 	@Override
 	public boolean isValidCost() {
 		return getCost() >= 0;
